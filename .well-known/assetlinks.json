@@ -1,9 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "app.vercel.d_a_kasir.twa",
-        "sha256_cert_fingerprints": ["0E:FE:4B:38:20:37:F4:2F:44:46:BC:29:B8:E8:AA:56:A3:92:06:60:3A:53:2A:58:E8:F9:61:6E:3F:73:08:8C"]
-      }
-    }]
-
