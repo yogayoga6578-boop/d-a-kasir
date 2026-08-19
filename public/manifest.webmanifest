@@ -1,13 +1,18 @@
 {
-  "name": "Kasir Suara",
-  "short_name": "Kasir Suara",
+"name": "RD kasir",
+  "short_name": "RD kasir",
   "description": "Kasir sederhana dengan input suara Bahasa Indonesia.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#EAF0E4",
+  "background_color": "#25a3ff",
   "theme_color": "#1E2A22",
   "lang": "id-ID",
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }
