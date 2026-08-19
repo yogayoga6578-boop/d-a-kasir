@@ -276,7 +276,7 @@ export default function KasirSuara() {
             <Store size={20} color={T.paper} />
           </div>
           <div>
-            <div style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 21, letterSpacing: 0.2 }}>Kasir Suara</div>
+            <div style={{ fontFamily: displayFont, fontWeight: 700, fontSize: 21, letterSpacing: 0.2 }}>RD Kasir</div>
             <div style={{ fontSize: 12, color: T.inkSoft, fontFamily: monoFont }}>{todayLabel()}</div>
           </div>
         </div>
