@@ -222,13 +222,41 @@ export default function KasirSuara() {
   };
 
   const addProduct = () => {
-    const price = parseInt(newPrice.replace(/[^\d]/g, ""), 10);
-    if (!newName.trim() || !price) return;
-    const list = [...products, { id: Date.now().toString(), name: newName.trim(), price }];
-    saveProducts(list);
-    setNewName("");
-    setNewPrice("");
+  const costPrice = parseInt(newCostPrice.replace(/[^\d]/g, ""), 10);
+  const sellPrice = parseInt(newSellPrice.replace(/[^\d]/g, ""), 10);
+  const stock = parseInt(newStock, 10);
+
+  if (
+    !newName.trim() ||
+    !sellPrice ||
+    isNaN(stock) ||
+    stock < 0
+  ) {
+    return;
+  }
+
+  const product = {
+    id: Date.now().toString(),
+    name: newName.trim(),
+    category: newCategory.trim() || "Umum",
+    costPrice: costPrice || 0,
+    sellPrice,
+    price: sellPrice,
+    stock,
+    unit: newUnit || "pcs",
   };
+
+  const list = [...products, product];
+
+  saveProducts(list);
+
+  setNewName("");
+  setNewCategory("");
+  setNewCostPrice("");
+  setNewSellPrice("");
+  setNewStock("");
+  setNewUnit("pcs");
+};
 
   const removeProduct = (id) => {
     saveProducts(products.filter((p) => p.id !== id));
