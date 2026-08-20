@@ -551,24 +551,82 @@ export default function KasirSuara() {
                 </div>
               ))}
 
-              <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-                <input
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="Nama barang"
-                  style={inputStyle}
-                />
-                <input
-                  value={newPrice}
-                  onChange={(e) => setNewPrice(e.target.value)}
-                  placeholder="Harga"
-                  inputMode="numeric"
-                  style={{ ...inputStyle, width: 90, flex: "none" }}
-                />
-                <button onClick={addProduct} style={{ background: T.brass, border: "none", borderRadius: 8, width: 38, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-                  <Plus size={17} color="#fff" />
-                </button>
-              </div>
+              <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: 6,
+    marginTop: 10,
+  }}
+>
+  <input
+    value={newName}
+    onChange={(e) => setNewName(e.target.value)}
+    placeholder="Nama barang"
+    style={inputStyle}
+  />
+
+  <input
+    value={newCategory}
+    onChange={(e) => setNewCategory(e.target.value)}
+    placeholder="Kategori"
+    style={inputStyle}
+  />
+
+  <input
+    value={newCostPrice}
+    onChange={(e) => setNewCostPrice(e.target.value)}
+    placeholder="Harga modal"
+    inputMode="numeric"
+    style={inputStyle}
+  />
+
+  <input
+    value={newSellPrice}
+    onChange={(e) => setNewSellPrice(e.target.value)}
+    placeholder="Harga jual"
+    inputMode="numeric"
+    style={inputStyle}
+  />
+
+  <input
+    value={newStock}
+    onChange={(e) => setNewStock(e.target.value)}
+    placeholder="Stok"
+    inputMode="numeric"
+    style={inputStyle}
+  />
+
+  <select
+    value={newUnit}
+    onChange={(e) => setNewUnit(e.target.value)}
+    style={inputStyle}
+  >
+    <option value="pcs">pcs</option>
+    <option value="bungkus">bungkus</option>
+    <option value="botol">botol</option>
+    <option value="kotak">kotak</option>
+    <option value="kg">kg</option>
+    <option value="liter">liter</option>
+  </select>
+
+  <button
+    onClick={addProduct}
+    style={{
+      gridColumn: "1 / -1",
+      background: T.brass,
+      color: "#fff",
+      border: "none",
+      borderRadius: 8,
+      padding: "10px",
+      fontWeight: 700,
+      cursor: "pointer",
+    }}
+  >
+    <Plus size={17} style={{ verticalAlign: "middle", marginRight: 5 }} />
+    Tambah Barang
+  </button>
+</div>
             </div>
           )}
         </div>
