@@ -215,18 +215,15 @@ export default function KasirSuara() {
     setTypedText("");
   };
 
-  const saveProducts = async (list) => {
+  const saveProducts = (list) => {
   setProducts(list);
 
   // Simpan ke penyimpanan lokal HP
   try {
     localStorage.setItem("products", JSON.stringify(list));
-  } catch (e) {}
-
-  // Tetap coba simpan ke storage lama
-  try {
-    await window.storage.set("products", JSON.stringify(list));
-  } catch (e) {}
+  } catch (e) {
+    console.error("Gagal menyimpan produk:", e);
+  }
 };
 
   const addProduct = () => {
