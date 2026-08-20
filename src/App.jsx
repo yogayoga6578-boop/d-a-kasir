@@ -120,7 +120,11 @@ export default function KasirSuara() {
   const [showProducts, setShowProducts] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newPrice, setNewPrice] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [newCostPrice, setNewCostPrice] = useState("");
+  const [newSellPrice, setNewSellPrice] = useState("");
+  const [newStock, setNewStock] = useState("");
+  const [newUnit, setNewUnit] = useState("pcs");
   const [loaded, setLoaded] = useState(false);
   const [supportsVoice, setSupportsVoice] = useState(true);
   const [typedText, setTypedText] = useState("");
