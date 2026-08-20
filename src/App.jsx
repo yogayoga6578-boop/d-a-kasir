@@ -540,16 +540,80 @@ export default function KasirSuara() {
                 </div>
               )}
               {products.map((p) => (
-                <div key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: `1px solid ${T.rule}55` }}>
-                  <span style={{ fontSize: 13.5 }}>{p.name}</span>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontFamily: monoFont, fontSize: 13 }}>{rupiah(p.price)}</span>
-                    <button onClick={() => removeProduct(p.id)} style={{ ...qtyBtnStyle, color: T.stamp }}>
-                      <X size={13} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {products.map((p) => (
+  <div
+    key={p.id}
+    style={{
+      padding: "10px 0",
+      borderBottom: `1px solid ${T.rule}55`,
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 8,
+      }}
+    >
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: 14, fontWeight: 700 }}>
+          {p.name}
+        </div>
+
+        <div
+          style={{
+            fontSize: 11.5,
+            color: T.inkSoft,
+            marginTop: 3,
+          }}
+        >
+          {p.category || "Umum"}
+        </div>
+      </div>
+
+      <button
+        onClick={() => removeProduct(p.id)}
+        style={{ ...qtyBtnStyle, color: T.stamp }}
+      >
+        <X size={13} />
+      </button>
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 7,
+        fontSize: 12,
+      }}
+    >
+      <span style={{ color: T.inkSoft }}>
+        Modal: {rupiah(p.costPrice || 0)}
+      </span>
+
+      <span
+        style={{
+          fontFamily: monoFont,
+          fontWeight: 700,
+        }}
+      >
+        Jual: {rupiah(p.sellPrice || p.price || 0)}
+      </span>
+    </div>
+
+    <div
+      style={{
+        marginTop: 5,
+        fontSize: 12,
+        color: p.stock <= 5 ? T.stamp : T.inkSoft,
+      }}
+    >
+      Stok: {p.stock ?? 0} {p.unit || "pcs"}
+    </div>
+  </div>
+))}
 
               <div
   style={{
