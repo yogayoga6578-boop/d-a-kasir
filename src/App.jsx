@@ -106,7 +106,56 @@ function parseTranscript(transcript, products) {
   }
   return { matched, unmatched };
 }
+const DB_NAME = "rd-kasir-db";
+const DB_VERSION = 1;
+const STORE_NAME = "products";
 
+function openProductDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function loadProductsDB() {
+  const db = await openProductDB();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveProductsDB(products) {
+  const db = await openProductDB();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+
+    store.clear();
+
+    for (const product of products) {
+      store.put(product);
+    }
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
 // ---------- main component ----------
 export default function KasirSuara() {
   const [products, setProducts] = useState([]);
@@ -134,10 +183,11 @@ export default function KasirSuara() {
   useEffect(() => {
     (async () => {
       try {
-        const savedProducts = localStorage.getItem("products");
-        if (savedProducts) {
-  setProducts(JSON.parse(savedProducts));
-} catch (e) {}
+  const savedProducts = await loadProductsDB();
+  setProducts(savedProducts);
+} catch (e) {
+  console.error("Gagal memuat produk:", e);
+      }
       try {
         const d = Promise.resolve({ value: localStorage.getItem(`day:${todayKey()}`) });
         if (d) {
