@@ -215,8 +215,9 @@ export default function KasirSuara() {
     setTypedText("");
   };
 
-  const saveProducts = (list) => {
-  setProducts(list);
+  localStorage.setItem("products", JSON.stringify(list));
+
+console.log("PRODUCTS TERSIMPAN:", localStorage.getItem("products"));
 
   // Simpan ke penyimpanan lokal HP
   try {
