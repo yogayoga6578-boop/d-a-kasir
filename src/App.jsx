@@ -134,9 +134,10 @@ export default function KasirSuara() {
   useEffect(() => {
     (async () => {
       try {
-        const p = Promise.resolve({ value: localStorage.getItem("products") });
-        if (p) setProducts(JSON.parse(p.value));
-      } catch (e) {}
+        const savedProducts = localStorage.getItem("products");
+        if (savedProducts) {
+  setProducts(JSON.parse(savedProducts));
+} catch (e) {}
       try {
         const d = Promise.resolve({ value: localStorage.getItem(`day:${todayKey()}`) });
         if (d) {
@@ -215,11 +216,18 @@ export default function KasirSuara() {
   };
 
   const saveProducts = async (list) => {
-    setProducts(list);
-    try {
-      localStorage.setItem("products", JSON.stringify(list));
-    } catch (e) {}
-  };
+  setProducts(list);
+
+  // Simpan ke penyimpanan lokal HP
+  try {
+    localStorage.setItem("products", JSON.stringify(list));
+  } catch (e) {}
+
+  // Tetap coba simpan ke storage lama
+  try {
+    await window.storage.set("products", JSON.stringify(list));
+  } catch (e) {}
+};
 
   const addProduct = () => {
   const costPrice = parseInt(newCostPrice.replace(/[^\d]/g, ""), 10);
