@@ -260,18 +260,16 @@ export default function KasirSuara() {
   };
 
   const submitTyped = () => {
-    if (!typedText.trim()) return;
-    handleFinalTranscript(typedText);
-    setTypedText("");
-  };
+  if (!typedText.trim()) return;
+  handleFinalTranscript(typedText);
+  setTypedText("");
+};
 
-  localStorage.setItem("products", JSON.stringify(list));
+const saveProducts = async (list) => {
+  setProducts(list);
 
-console.log("PRODUCTS TERSIMPAN:", localStorage.getItem("products"));
-
-  // Simpan ke penyimpanan lokal HP
   try {
-    localStorage.setItem("products", JSON.stringify(list));
+    await saveProductsDB(list);
   } catch (e) {
     console.error("Gagal menyimpan produk:", e);
   }
