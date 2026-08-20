@@ -540,7 +540,6 @@ export default function KasirSuara() {
                 </div>
               )}
               {products.map((p) => (
-              {products.map((p) => (
   <div
     key={p.id}
     style={{
