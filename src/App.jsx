@@ -331,19 +331,75 @@ const saveProducts = async (list) => {
   const cartTotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
 
   const finishTransaction = async () => {
-    if (!cart.length) return;
-    const tx = { time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }), total: cartTotal, items: cart };
-    const newTotal = dayTotal + cartTotal;
-    const newTx = [tx, ...dayTx];
-    setDayTotal(newTotal);
-    setDayTx(newTx);
-    setCart([]);
-    setFlash(cartTotal);
-    setTimeout(() => setFlash(null), 1800);
-    try {
-      localStorage.setItem(`day:${todayKey()}`, JSON.stringify({ total: newTotal, transactions: newTx }));
-    } catch (e) {}
+  if (!cart.length) return;
+
+  // Cek stok sebelum transaksi
+  for (const item of cart) {
+    const product = products.find((p) => p.id === item.productId);
+
+    if (!product) {
+      alert(`Barang "${item.name}" tidak ditemukan.`);
+      return;
+    }
+
+    const currentStock = Number(product.stock || 0);
+
+    if (item.qty > currentStock) {
+      alert(
+        `Stok "${product.name}" tidak cukup.\n` +
+        `Tersedia: ${currentStock} ${product.unit || "pcs"}\n` +
+        `Diminta: ${item.qty}`
+      );
+      return;
+    }
+  }
+
+  // Kurangi stok
+  const updatedProducts = products.map((product) => {
+    const item = cart.find((c) => c.productId === product.id);
+
+    if (!item) return product;
+
+    return {
+      ...product,
+      stock: Math.max(0, Number(product.stock || 0) - item.qty),
+    };
+  });
+
+  // Simpan stok terbaru
+  await saveProductsDB(updatedProducts);
+  setProducts(updatedProducts);
+
+  // Simpan transaksi
+  const tx = {
+    time: new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    total: cartTotal,
+    items: cart,
   };
+
+  const newTotal = dayTotal + cartTotal;
+  const newTx = [tx, ...dayTx];
+
+  setDayTotal(newTotal);
+  setDayTx(newTx);
+  setCart([]);
+  setFlash(cartTotal);
+
+  setTimeout(() => setFlash(null), 1800);
+
+  try {
+    localStorage.setItem(
+      `day:${todayKey()}`,
+      JSON.stringify({
+        total: newTotal,
+        transactions: newTx,
+      })
+    );
+  } catch (e) {}
+};
 
   return (
     <div style={{ background: T.paper, minHeight: "100vh", fontFamily: bodyFont, color: T.ink }}>
