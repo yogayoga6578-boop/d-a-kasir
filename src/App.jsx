@@ -156,83 +156,127 @@ async function saveProductsDB(products) {
     tx.onerror = () => reject(tx.error);
   });
 }
-// ---------- main component ----------
-export default function KasirSuara() {
-  const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [dayTotal, setDayTotal] = useState(0);
-  const [dayTx, setDayTx] = useState([]);
-  const [listening, setListening] = useState(false);
-  const [liveText, setLiveText] = useState("");
-  const [lastUnmatched, setLastUnmatched] = useState([]);
-  const [flash, setFlash] = useState(null);
-  const [showProducts, setShowProducts] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newCategory, setNewCategory] = useState("");
-  const [newCostPrice, setNewCostPrice] = useState("");
-  const [newSellPrice, setNewSellPrice] = useState("");
-  const [newStock, setNewStock] = useState("");
-  const [newUnit, setNewUnit] = useState("pcs");
-  const [loaded, setLoaded] = useState(false);
-  const [supportsVoice, setSupportsVoice] = useState(true);
-  const [typedText, setTypedText] = useState("");
-  const recognitionRef = useRef(null);
+{showPayment && cart.length > 0 && (
+  <div
+    style={{
+      background: T.card,
+      border: `1px solid ${T.rule}`,
+      borderRadius: 14,
+      padding: "16px",
+      marginBottom: 16,
+    }}
+  >
+    <div
+      style={{
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: 1,
+        color: T.inkSoft,
+        fontFamily: monoFont,
+      }}
+    >
+      Pembayaran
+    </div>
 
-  // load persisted data
-  useEffect(() => {
-    (async () => {
-      try {
-  const savedProducts = await loadProductsDB();
-  setProducts(savedProducts);
-} catch (e) {
-  console.error("Gagal memuat produk:", e);
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginTop: 10,
+      }}
+    >
+      <span>Total</span>
+      <strong style={{ fontFamily: monoFont }}>
+        {rupiah(cartTotal)}
+      </strong>
+    </div>
+
+    <input
+      value={paymentAmount}
+      onChange={(e) =>
+        setPaymentAmount(e.target.value.replace(/[^\d]/g, ""))
       }
-      try {
-        const d = Promise.resolve({ value: localStorage.getItem(`day:${todayKey()}`) });
-        if (d) {
-          const parsed = JSON.parse(d.value);
-          setDayTotal(parsed.total || 0);
-          setDayTx(parsed.transactions || []);
-        }
-      } catch (e) {}
-      setLoaded(true);
-    })();
+      placeholder="Uang pelanggan"
+      inputMode="numeric"
+      style={{
+        ...inputStyle,
+        width: "100%",
+        marginTop: 12,
+      }}
+    />
 
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      setSupportsVoice(false);
-      return;
-    }
-    const rec = new SR();
-    rec.lang = "id-ID";
-    rec.continuous = false;
-    rec.interimResults = true;
-    rec.onresult = (e) => {
-      let text = "";
-      for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
-      setLiveText(text);
-      if (e.results[e.results.length - 1].isFinal) {
-        handleFinalTranscript(text);
-      }
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recognitionRef.current = rec;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginTop: 12,
+        fontSize: 14,
+      }}
+    >
+      <span>Kembalian</span>
+      <strong
+        style={{
+          fontFamily: monoFont,
+          fontSize: 18,
+          color:
+            Number(paymentAmount || 0) >= cartTotal
+              ? T.ink
+              : T.stamp,
+        }}
+      >
+        {rupiah(
+          Math.max(0, Number(paymentAmount || 0) - cartTotal)
+        )}
+      </strong>
+    </div>
 
-  const productsRef = useRef(products);
-  useEffect(() => {
-    productsRef.current = products;
-  }, [products]);
+    <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+      <button
+        onClick={() => {
+          setShowPayment(false);
+          setPaymentAmount("");
+        }}
+        style={{
+          flex: 1,
+          border: `1px solid ${T.rule}`,
+          background: T.paper,
+          borderRadius: 8,
+          padding: "10px",
+          cursor: "pointer",
+        }}
+      >
+        Batal
+      </button>
 
-  const handleFinalTranscript = useCallback((text) => {
-    const { matched, unmatched } = parseTranscript(text, productsRef.current);
-    if (matched.length) {
-      setCart((prev) => {
-        const next = [...prev];
-        for (const m of matched) {
+      <button
+        disabled={Number(paymentAmount || 0) < cartTotal}
+        onClick={async () => {
+          await finishTransaction();
+          setShowPayment(false);
+          setPaymentAmount("");
+        }}
+        style={{
+          flex: 1,
+          border: "none",
+          borderRadius: 8,
+          padding: "10px",
+          background:
+            Number(paymentAmount || 0) >= cartTotal
+              ? T.ink
+              : T.rule,
+          color: T.paper,
+          fontWeight: 700,
+          cursor:
+            Number(paymentAmount || 0) >= cartTotal
+              ? "pointer"
+              : "not-allowed",
+        }}
+      >
+        Konfirmasi
+      </button>
+    </div>
+  </div>
+)}        for (const m of matched) {
           const idx = next.findIndex((c) => c.productId === m.product.id);
           if (idx >= 0) next[idx] = { ...next[idx], qty: next[idx].qty + m.qty };
           else next.push({ productId: m.product.id, name: m.product.name, price: m.product.price, qty: m.qty });
@@ -629,6 +673,127 @@ const saveProducts = async (list) => {
             </>
           )}
         </div>
+        {showPayment && cart.length > 0 && (
+  <div
+    style={{
+      background: T.card,
+      border: `1px solid ${T.rule}`,
+      borderRadius: 14,
+      padding: "16px",
+      marginBottom: 16,
+    }}
+  >
+    <div
+      style={{
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: 1,
+        color: T.inkSoft,
+        fontFamily: monoFont,
+      }}
+    >
+      Pembayaran
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginTop: 10,
+      }}
+    >
+      <span>Total</span>
+      <strong style={{ fontFamily: monoFont }}>
+        {rupiah(cartTotal)}
+      </strong>
+    </div>
+
+    <input
+      value={paymentAmount}
+      onChange={(e) =>
+        setPaymentAmount(e.target.value.replace(/[^\d]/g, ""))
+      }
+      placeholder="Uang pelanggan"
+      inputMode="numeric"
+      style={{
+        ...inputStyle,
+        width: "100%",
+        marginTop: 12,
+      }}
+    />
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginTop: 12,
+        fontSize: 14,
+      }}
+    >
+      <span>Kembalian</span>
+      <strong
+        style={{
+          fontFamily: monoFont,
+          fontSize: 18,
+          color:
+            Number(paymentAmount || 0) >= cartTotal
+              ? T.ink
+              : T.stamp,
+        }}
+      >
+        {rupiah(
+          Math.max(0, Number(paymentAmount || 0) - cartTotal)
+        )}
+      </strong>
+    </div>
+
+    <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+      <button
+        onClick={() => {
+          setShowPayment(false);
+          setPaymentAmount("");
+        }}
+        style={{
+          flex: 1,
+          border: `1px solid ${T.rule}`,
+          background: T.paper,
+          borderRadius: 8,
+          padding: "10px",
+          cursor: "pointer",
+        }}
+      >
+        Batal
+      </button>
+
+      <button
+        disabled={Number(paymentAmount || 0) < cartTotal}
+        onClick={async () => {
+          await finishTransaction();
+          setShowPayment(false);
+          setPaymentAmount("");
+        }}
+        style={{
+          flex: 1,
+          border: "none",
+          borderRadius: 8,
+          padding: "10px",
+          background:
+            Number(paymentAmount || 0) >= cartTotal
+              ? T.ink
+              : T.rule,
+          color: T.paper,
+          fontWeight: 700,
+          cursor:
+            Number(paymentAmount || 0) >= cartTotal
+              ? "pointer"
+              : "not-allowed",
+        }}
+      >
+        Konfirmasi
+      </button>
+    </div>
+  </div>
+)}
 
         {/* product management */}
         <div style={{ background: T.card, border: `1px solid ${T.rule}`, borderRadius: 14, padding: "14px 16px" }}>
