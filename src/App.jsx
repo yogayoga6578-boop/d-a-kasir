@@ -606,26 +606,26 @@ const saveProducts = async (list) => {
                 <span style={{ fontFamily: monoFont, fontWeight: 700, fontSize: 19 }}>{rupiah(cartTotal)}</span>
               </div>
               <button
-                onClick={finishTransaction}
-                style={{
-                  width: "100%",
-                  marginTop: 12,
-                  background: T.ink,
-                  color: T.paper,
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 0",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                  cursor: "pointer",
-                }}
-              >
-                <Check size={16} /> Selesai Transaksi
-              </button>
+  onClick={() => setShowPayment(true)}
+  style={{
+    width: "100%",
+    marginTop: 12,
+    background: T.ink,
+    color: T.paper,
+    border: "none",
+    borderRadius: 10,
+    padding: "12px 0",
+    fontSize: 14,
+    fontWeight: 700,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    cursor: "pointer",
+  }}
+>
+  <Check size={16} /> Bayar
+</button>
             </>
           )}
         </div>
